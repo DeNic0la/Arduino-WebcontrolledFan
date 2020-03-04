@@ -19,7 +19,7 @@ void setup() {
 void loop() {
   Serial.println(analogRead(rotationSensor));
   int rotVal = analogRead(rotationSensor);
-  int mappedRotVal = map(rotVal,0, 4095,0,255);
+  int mappedRotVal = map(rotVal,0, 4095,0,200);
   ledcWrite(Channel, mappedRotVal);
   delay(30);
 
