@@ -3,7 +3,7 @@ const int rotationSensor = 39;
 
 const int freq = 5000;
 const int Channel = 0;
-const int resolution = 8;
+const int resolution = 16;
 
 void setup() {
   Serial.begin(115200);
@@ -17,9 +17,11 @@ void setup() {
 }
 
 void loop() {
-  Serial.println(analogRead(rotationSensor));
   int rotVal = analogRead(rotationSensor);
-  int mappedRotVal = map(rotVal,0, 4095,0,200);
+  Serial.println(rotVal);
+  
+  rotVal = rotVal/10;
+  int mappedRotVal = map(rotVal,0, 409,0,255);
   ledcWrite(Channel, mappedRotVal);
   delay(30);
 

@@ -2,12 +2,17 @@
 #include <WiFi.h>
 #include <HttpClient.h>
 
-
+// Constants, like PINs
 const int MosfetPin = 5;
 const int rotationSensor = 39;
 const int freq = 5000;
 const int Channel = 0;
 const int resolution = 8;
+
+// Enum for Checking the Current Mode
+enum currentMode{OnlineControll,ManuellControll,APIControll};
+currentMode Active = ManuellControll;
+enum currentSpeed
 
 WiFiClient client;
 
@@ -19,10 +24,10 @@ const char* password = "12345678";
 // Set web server port number to 80
 WiFiServer server(80);
 
-// Variable to store the HTTP request
+// Variable to store the HTTP request, Global
 String header;
 
-void setup() {
+void setup() {  // Setting up some Stuff in order to Work.
   Serial.begin(115200);
   pinMode(rotationSensor, INPUT);
   pinMode(MosfetPin, OUTPUT);
@@ -38,7 +43,7 @@ void setup() {
     Serial.print(".");
   }
 
-
+  // Print the IP of the Webserver.
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
 
@@ -61,7 +66,7 @@ void loop() {
 
 
 
-// Here we Transfer the Information if a Client is Available
+// Transfer the Information if a Client is Available
   if (client) {                             // If a new client connects,
     Serial.println("New Client.");          // print a message out in the serial port
     String currentLine = "";                
@@ -117,7 +122,15 @@ client.println("                        </ul>");
 client.println("                    </div>");
 client.println("                </nav>");
 client.println("            </div>");
+
+client.println("            <div class=\"jumbotron\">");
+client.println("                <h1>Regulierung über Rotationssensor</h1>");
+client.println("                <p class=\"lead\">Sie Können die Geschwindigkeit des Fans über den eingebauten Rotationssensor Steuern, dafür muss der Modus jedoch auf Manuelle Kontrolle Geschaltet sein.</p>");
+client.println("                <p><a class=\"btn btn-lg btn-success\" href=\"/OnlineController/TurnON\" role=\"button\"> API Aktivieren (Not Working Yet)</a></p>");
+client.println("            </div>");
             }
+
+
             
             else if (header.indexOf("GET /OnlineController") >= 0){
 client.println("                            <li class=\"nav-item\">");
@@ -186,10 +199,35 @@ client.println("                    </div>");
 client.println("                </nav>");
 client.println("            </div>");
 
+
+
+
 client.println("            <div class=\"jumbotron\">");
 client.println("                <h1>The Collest Fan Controllcenter</h1>");
 client.println("                <p class=\"lead\">Willkommen im Controllcenter des Arduino Controlled Fan von Moritz und Nicola. Hier Haben sie die Möglichkeit die Geschwindigkeit der Lüfter zu regulieren, auf auf die Steuerung über eine Wetter API umzuschalten oder auf eine Manuelle Steuerung per Rotations Sensor umzuschalten</p>");
-client.println("                <p><a class=\"btn btn-lg btn-success\" href=\"#\" role=\"button\">DisplayCurrentMode</a></p>");
+
+client.println("                            <li class=\"active nav-item\">");
+client.println("                                <a class=\"nav-link\" href=\"/Manuell\">Manuell</a>");
+client.println("                            </li>");
+client.println("                            <li class=\"nav-item\">");
+client.println("                                <a class=\"nav-link\" href=\"/OnlineController\">Online Controller</a>");
+client.println("                            </li>");
+client.println("                            <li class=\"nav-item\">");
+client.println("                                <a class=\"nav-link\" href=\"/APIController\">API Controller</a>");
+client.println("                            </li>");
+          if (Active = OnlineControll){
+          client.println("                <p><a class=\"btn btn-lg btn-success\" href=\"/OnlineController\" role=\"button\">Online Controller</a></p>");  
+          }
+          else if(Active = ManuellControll){
+          client.println("                <p><a class=\"btn btn-lg btn-success\" href=\"/Manuell\" role=\"button\">Manuell Controller</a></p>");
+          }
+          else if(Active = APIControll){
+          client.println("                <p><a class=\"btn btn-lg btn-success\" href=\"/APIController\" role=\"button\">API Controller</a></p>");
+          }
+          else{
+          client.println("                <p><a class=\"btn btn-lg btn-success\" href=\"#\" role=\"button\">Something went Verry Verry Much Wrong</a></p>");
+          }
+
 client.println("            </div>");
 }
             //------ Here Again this Code is Needed in All Versions
